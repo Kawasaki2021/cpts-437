@@ -29,11 +29,34 @@ def Create_CNN_Model(input_shape):
     model = Model(inputs=face_input, outputs=face_output)
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
+    # Return CNN model
     return model
 
 ##### Train model #####
 def train_model(model, X_train, y_train):
     # Train the model
     trained_model = model.fit(X_train, y_train, epochs=10, batch_size=32)
-    
+
+    Return trained model
     return trained_model
+
+##### Heuristic Value CNN Predictor #####
+def heuristic_predictor(model, face_image):
+    # Intialize speaker_map
+    speaker_map = {0: 'Kamala Harris', 1: 'Donald Trump', 2: 'Mediator', 3: 'Unknown'}
+
+    # Process the input face image
+    # Add batch dimension
+    face_input = np.expand_dims(face_image, axis=0)
+    
+    # Predict with the CNN model
+    prediction = model.predict(face_input)
+    
+    # Get the predicted class with the highest probability
+    predicted_class = np.argmax(prediction)
+    
+    # Map the predicted class to the corresponding speaker
+    predicted_speaker = speaker_map.get(predicted_class, 'Unknown')
+
+    # Return predicted speaker
+    return predicted_speaker
