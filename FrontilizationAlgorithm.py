@@ -51,7 +51,8 @@ def find_and_frontalize(image_path):
 
     if faces != []:
         for face in faces:
-            front_face = frontalize(face)
+            front_face = frontalize(face) * 255
+            front_face = front_face.astype(np.uint8)
             frontalized_faces.append(front_face)
 
     return frontalized_faces

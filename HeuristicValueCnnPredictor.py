@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 import FrontilizationAlgorithm
 
 ##### Create CNN model for face recognition #####
@@ -11,23 +11,27 @@ def Create_CNN_Model(input_shape):
     # First convolutional layer
     x = Conv2D(32, (3, 3), activation='relu')(face_input)
     x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Dropout(0.3)(x)
 
     # Second convolutional layer
     x = Conv2D(64, (3, 3), activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Dropout(0.3)(x)
 
     # Third convolutional layer
     x = Conv2D(128, (3, 3), activation='relu')(x)
     x = MaxPooling2D(pool_size=(2, 2))(x)
+    x = Dropout(0.3)(x)
 
     # Flatten and fully connected layers
     x = Flatten()(x)
     x = Dense(128, activation='relu')(x)
+    x = Dropout(0.3)(x)
     face_output = Dense(4, activation='softmax')(x)
 
     # Create and compile the model
     model = Model(inputs=face_input, outputs=face_output)
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
     # Return CNN model
     return model
@@ -35,9 +39,9 @@ def Create_CNN_Model(input_shape):
 ##### Train model #####
 def train_model(model, X_train, y_train):
     # Train the model
-    trained_model = model.fit(X_train, y_train, epochs=10, batch_size=32)
+    model.fit(X_train, y_train, epochs=25, batch_size=32)
 
-    return trained_model
+    return model
 
 ##### Heuristic Value CNN Predictor #####
 def heuristic_predictor(model, face_image):
@@ -93,6 +97,6 @@ model = Create_CNN_Model((128, 128, 3))
 
 trained_model = train_model(model, x_data, y_data)
 
-front_img = FrontilizationAlgorithm.find_and_frontalize("frame_0050.jpg")
+front_img = FrontilizationAlgorithm.find_and_frontalize("frame_0460.jpg")
 
-print(heuristic_predictor(trained_model, front_img))
+print(heuristic_predictor(trained_model, front_img[1]))
