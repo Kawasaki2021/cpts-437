@@ -35,7 +35,6 @@ def train_model(model, X_train, y_train):
     # Train the model
     trained_model = model.fit(X_train, y_train, epochs=10, batch_size=32)
 
-    Return trained model
     return trained_model
 
 ##### Heuristic Value CNN Predictor #####
