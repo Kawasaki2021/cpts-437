@@ -1,8 +1,9 @@
 import numpy as np
 import os
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, model_from_json
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 import FrontilizationAlgorithm
+import pickle
 
 ##### Create CNN model for face recognition #####
 def Create_CNN_Model(input_shape):
@@ -39,7 +40,7 @@ def Create_CNN_Model(input_shape):
 ##### Train model #####
 def train_model(model, X_train, y_train):
     # Train the model
-    model.fit(X_train, y_train, epochs=25, batch_size=32)
+    model.fit(X_train, y_train, epochs=100, batch_size=32)
 
     return model
 
@@ -88,6 +89,33 @@ def load_train_data():
 
     return x_data, y_data
 
+def save_model_with_pickle(model, filepath):
+    # Save the architecture and weights of the model
+    model_json = model.to_json()  # Get the architecture as a JSON string
+    model_weights = model.get_weights()  # Get the weights of the model
+    
+    # Save the model structure and weights to a file using pickle
+    with open(filepath, 'wb') as f:
+        pickle.dump({'model_json': model_json, 'model_weights': model_weights}, f)
+
+    print("Model saved successfully with Pickle!")
+
+def load_model_with_pickle(filepath):
+    # Load the model structure and weights from the pickle file
+    with open(filepath, 'rb') as f:
+        model_data = pickle.load(f)
+    
+    # Reconstruct the model from the JSON structure
+    model_json = model_data['model_json']
+    model = model_from_json(model_json)  # Create model from JSON
+    
+    # Set the weights of the model
+    model.set_weights(model_data['model_weights'])
+    
+    print("Model loaded successfully with Pickle!")
+    
+    return model
+
 x_data, y_data = load_train_data()
 
 x_data = np.array(x_data)
@@ -96,6 +124,8 @@ y_data = np.array(y_data)
 model = Create_CNN_Model((128, 128, 3))
 
 trained_model = train_model(model, x_data, y_data)
+
+save_model_with_pickle(trained_model, 'model_pickle.pkl')
 
 front_img = FrontilizationAlgorithm.find_and_frontalize("frame_0460.jpg")
 
