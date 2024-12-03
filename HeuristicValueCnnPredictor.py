@@ -4,6 +4,7 @@ from tensorflow.keras.models import Model, model_from_json
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 import FrontilizationAlgorithm
 import pickle
+from collections import Counter
 
 ##### Create CNN model for face recognition #####
 def Create_CNN_Model(input_shape):
@@ -116,7 +117,7 @@ def load_model_with_pickle(filepath):
     
     return model
 
-x_data, y_data = load_train_data()
+"""x_data, y_data = load_train_data()
 
 x_data = np.array(x_data)
 y_data = np.array(y_data)
@@ -125,8 +126,23 @@ model = Create_CNN_Model((128, 128, 3))
 
 trained_model = train_model(model, x_data, y_data)
 
-save_model_with_pickle(trained_model, 'model_pickle.pkl')
+save_model_with_pickle(trained_model, 'model_pickle.pkl')"""
 
-front_img = FrontilizationAlgorithm.find_and_frontalize("frame_0460.jpg")
+model = load_model_with_pickle('model_pickle.pkl')
 
-print(heuristic_predictor(trained_model, front_img[1]))
+results = []
+
+for image in os.listdir("./frames"):
+        face_img = FrontilizationAlgorithm.find_and_frontalize(os.getcwd() + "\\frames\\" + image)
+        for img in face_img:
+            results.append(heuristic_predictor(model, img))
+
+count = Counter(results)
+
+file = open("Output.txt", "w")
+
+for item in count.items():
+    string = "Item: " + str(item[0]) + " Frequency: " + str(item[1]) + "\n"
+    file.write(string)
+
+file.close()

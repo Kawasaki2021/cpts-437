@@ -1,0 +1,3 @@
+Item: Mediator Frequency: 327
+Item: Kamala Harris Frequency: 256
+Item: Donald Trump Frequency: 400
