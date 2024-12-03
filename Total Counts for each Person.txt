@@ -1,0 +1,3 @@
+Harris: 460 
+Trump: 465
+Mediator: 68
