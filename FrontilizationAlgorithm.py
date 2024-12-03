@@ -6,6 +6,7 @@ import numpy as np
 import torch
 from torchvision import transforms
 from torch.autograd import Variable
+import network
 
 saved_model = torch.load("./generator_v0.pt", map_location=torch.device('cpu'))
 
@@ -48,8 +49,9 @@ def find_and_frontalize(image_path):
 
     faces = find_faces(image_path)
 
-    for face in faces:
-        front_face = frontalize(face)
-        frontalized_faces.append(front_face)
+    if faces != []:
+        for face in faces:
+            front_face = frontalize(face)
+            frontalized_faces.append(front_face)
 
     return frontalized_faces

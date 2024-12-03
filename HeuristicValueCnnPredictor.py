@@ -1,6 +1,8 @@
 import numpy as np
+import os
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense
+import FrontilizationAlgorithm
 
 ##### Create CNN model for face recognition #####
 def Create_CNN_Model(input_shape):
@@ -57,3 +59,40 @@ def heuristic_predictor(model, face_image):
 
     # Return predicted speaker
     return predicted_speaker
+
+def load_train_data():
+    x_data = []
+    y_data = []
+
+    for image in os.listdir("./moderator"):
+        face_img = FrontilizationAlgorithm.find_and_frontalize(os.getcwd() + "\moderator\\" + image)
+        if face_img != []:
+            x_data.append(face_img[0])
+            y_data.append(2)
+
+    for image in os.listdir("./harris"):
+        face_img = FrontilizationAlgorithm.find_and_frontalize(os.getcwd() + "\harris\\" + image)
+        if face_img != []:
+            x_data.append(face_img[0])
+            y_data.append(0)
+
+    for image in os.listdir("./trump"):
+        face_img = FrontilizationAlgorithm.find_and_frontalize(os.getcwd() + "\\trump\\" + image)
+        if face_img != []:
+            x_data.append(face_img[0])
+            y_data.append(1)
+
+    return x_data, y_data
+
+x_data, y_data = load_train_data()
+
+x_data = np.array(x_data)
+y_data = np.array(y_data)
+
+model = Create_CNN_Model((128, 128, 3))
+
+trained_model = train_model(model, x_data, y_data)
+
+front_img = FrontilizationAlgorithm.find_and_frontalize("frame_0050.jpg")
+
+print(heuristic_predictor(trained_model, front_img))
